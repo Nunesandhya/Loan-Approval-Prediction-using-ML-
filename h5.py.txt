@@ -1,0 +1,26 @@
+import numpy as n
+import joblib
+import pandas as p
+g=joblib.load("m.h5")
+f=g.feature_names_in_
+ge=input("enter your gender")
+m=input("enter marital status")
+d=int(input("enter no of dependents"))
+e=input("enter your education:graduated or ungraduated")
+s=input("are you self-employed or not")
+a=int(input("enter your income"))
+c=int(input("enter co-applicant income"))
+la=int(input("enter your loan amount"))
+lat=int(input("enter your loan amount term"))
+ch=int(input("enter your credit history"))
+pa=input("enter your property area")
+n_data={'gender':ge,'married':m,'dependents':d, 'education':e,
+       'self_employed':s, 'applicantincome':a, 'coapplicantincome':c, 'loanamount':la,
+       'loan_amount_term':lat, 'credit_history':ch, 'property_area':pa}
+n_data=p.DataFrame([n_data])
+n_data=p.get_dummies(n_data)
+n_data=n_data.reindex(columns=f ,fill_value=0)
+p=g.predict(n_data)
+ac=accuracy_score(y_pred,y_test)
+print(ac)
+print(p)

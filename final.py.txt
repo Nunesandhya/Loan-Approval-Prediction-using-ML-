@@ -1,0 +1,44 @@
+import joblib
+import pandas as p
+from flask import Flask, render_template, request, redirect, url_for
+from sklearn.metrics import accuracy_score
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+@app.route('/Approval', methods=['POST'])
+def Approval():
+    g=joblib.load("m.h5")
+    f=g.feature_names_in_
+    gender=str(request.form['gender'])
+    married=str(request.form['married']) 
+    dependents=int(request.form['dependents'])
+    education=str(request.form['education'])
+    self_employed=str(request.form['self_employed'])
+    applicantincome=int(request.form['applicantincome'])
+    coapplicantincome=int(request.form['coapplicantincome'])
+    loanamount=int(request.form['loanamount'])
+    loan_amount_term=int(request.form['loan_amount_term'])
+    credit_history=int(request.form['credit_history'])
+    property_area=str(request.form['property_area'])
+    n_data={'gender':gender,'married':married,'dependents':dependents, 'education':education,
+        'self_employed':self_employed, 'applicantincome':applicantincome, 'coapplicantincome':coapplicantincome, 'loanamount':loanamount,
+        'loan_amount_term':loan_amount_term, 'credit_history':credit_history, 'property_area':property_area}
+    n_data=p.DataFrame([n_data])
+    n_data=p.get_dummies(n_data)
+    n_data=n_data.reindex(columns=f ,fill_value=0)
+    r=g.predict(n_data)
+    if r[0]=='n':
+        result="your loan is rejected"
+    else:
+        result="your loan is approved"
+    return redirect(url_for('result', result=result))
+@app.route('/result')
+def result():
+    result = request.args.get('result')
+    return render_template('result.html', result=result)
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
